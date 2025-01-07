@@ -25,4 +25,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: nestjsapp/${{ github.sha }}:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.sha }}:latest
