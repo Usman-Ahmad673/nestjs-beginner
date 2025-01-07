@@ -17,7 +17,7 @@ import { LoggerService } from 'src/logger/logger.service';
 // import { CreateEmployeeDto } from './dto/create-employee.dto';
 // import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
-// @SkipThrottle()
+@SkipThrottle()
 @Controller('employee')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
