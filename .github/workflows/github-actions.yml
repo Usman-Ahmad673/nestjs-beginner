@@ -34,7 +34,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }} .
-          docker tag your-docker-image-name ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
+          docker tag nestjsapp ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
 
       - name: Install SSH Key
