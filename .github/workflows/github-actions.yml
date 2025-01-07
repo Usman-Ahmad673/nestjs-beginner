@@ -43,11 +43,11 @@ jobs:
           chmod 600 key.pem
       - name: Pull Docker image
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@your-ec2-instance-ip 'sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ secrets.EC2_HOST }} 'sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}'
       - name: Stop running container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@your-ec2-instance-ip 'sudo docker stop nestjsapp || true'
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@your-ec2-instance-ip 'sudo docker rm nestjsapp || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ secrets.EC2_HOST }} 'sudo docker stop nestjsapp || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ secrets.EC2_HOST }} 'sudo docker rm nestjsapp || true'
       - name: Run new container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@your-ec2-instance-ip 'sudo docker run -d --name nestjsapp -p 80:3000 ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ secrets.EC2_HOST }} 'sudo docker run -d --name nestjsapp -p 80:3000 ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}'
