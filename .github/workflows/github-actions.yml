@@ -40,7 +40,7 @@ jobs:
       - name: Install SSH Key
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
           
 
       - name: Deploy Docker image to EC2
