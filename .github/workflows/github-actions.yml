@@ -24,33 +24,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # Step 4: Build and push Docker image to Docker Hub
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        run: |
+          docker build -t your-docker-image-name .
+          docker tag your-docker-image-name your-dockerhub-username/your-docker-image-name:latest
+          docker push your-dockerhub-username/your-docker-image-name:latest
+
+      - name: Install SSH Key
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      # Step 5: Set up SSH key for EC2 instance
-      - name: Set permissions for private key
+      - name: Deploy Docker image to EC2
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
-          chmod 600 key.pem
-
-      # Step 6: Pull Docker image on existing EC2 instance
-      - name: Pull Docker image on EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            "sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}"
-
-      # Step 7: Stop and remove existing container (if any)
-      - name: Stop and remove existing container
-        run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            "sudo docker stop nestjsapp || true && sudo docker rm nestjsapp || true"
-
-      # Step 8: Run the new container
-      - name: Run new Docker container
-        run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            "sudo docker run -d --name nestjsapp -p 9000:9001 ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.AWS_EC2_INSTANCE_ID }} << 'EOF'
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
+          docker stop $(docker ps -a -q) || true
+          docker run -d -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
+          EOF
