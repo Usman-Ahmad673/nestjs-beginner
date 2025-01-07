@@ -35,24 +35,17 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           # AWS secret access key
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # Where EC2 instance is
-          aws-region: ${{ secrets.AWS_REGION }}
-          # AWS EC2 Instance id or ids
-          instance-ids: ${{ secrets.AWS_EC2_INSTANCE_ID }}
+          # Ensure correct region
+          aws-region: ${{ secrets.AWS_REGION }}  # Example: "us-east-1"
+          # Correct EC2 instance id (check if it is correct in secrets)
+          instance-ids: ${{ secrets.AWS_INSTANCE_ID }}
           # Command execution location
-          # !!! The line below may vary depending on where your Docker file is located.
           working-directory: /home/ubuntu
           # Bash commands you want to execute
           command: |
-            # Stop the running container
             sudo docker stop nestjsapp || true
-            # Remove the container if it exists
             sudo docker rm nestjsapp || true
-            # Pull the new Docker image
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
-            # Run the new Docker container
             sudo docker run -d --name nestjsapp -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
-            # Clean up unused Docker images
             sudo docker image prune -af
-          # Comment for Send-Command
           comment: Deploy new Docker image for the NestJS app on EC2 instance.
