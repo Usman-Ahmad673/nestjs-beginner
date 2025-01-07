@@ -32,14 +32,10 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          username: ${{ secrets.EC2_USERNAME }}  # Make sure this is the correct username
+          key: ${{ secrets.EC2_SSH_KEY }}       # Ensure the private key is correct
           script: |
-            echo "Stopping old Docker container..."
             docker stop nestjsapp || true
-            echo "Removing old Docker container..."
             docker rm nestjsapp || true
-            echo "Pulling new Docker image..."
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
-            echo "Starting Docker container..."
             docker run -d --name nestjsapp -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
