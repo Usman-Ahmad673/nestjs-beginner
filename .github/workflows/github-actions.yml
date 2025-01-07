@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout build code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Log latest commit hash
@@ -26,30 +26,20 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build and push
-        uses: docker/build-push-action@v5
+      - name: Deploy Docker image to EC2
+        uses: bitovi/github-actions-deploy-docker-to-ec2@v1.0.1
         with:
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
-        - name: Deploy Docker image to EC2
-          uses: bitovi/github-actions-deploy-docker-to-ec2@v1.0.1
-          with:
-            aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            ec2_instance_id: ${{ secrets.AWS_EC2_INSTANCE_ID }}
-            aws_default_region: ${{ secrets.AWS_REGION }}
-            aws_elb_app_port: 9000
-            ec2_host: ${{ secrets.EC2_HOST }}
-            ec2_user: ${{ secrets.EC2_USER }}
-            ec2_ssh_key: ${{ secrets.EC2_SSH_KEY }}
-            docker_image: ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
-            container_name: nestjsapp
-            container_port: 9001
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ec2_instance_id: ${{ secrets.AWS_EC2_INSTANCE_ID }}
+          aws_default_region: ${{ secrets.AWS_REGION }}
+          aws_elb_app_port: 9000
+          ec2_host: ${{ secrets.EC2_HOST }}
+          ec2_user: ${{ secrets.EC2_USER }}
+          ec2_ssh_key: ${{ secrets.EC2_SSH_KEY }}
+          docker_image: ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
+          container_name: nestjsapp
+          container_port: 9001
 
   # deploy:
   #   needs: build
