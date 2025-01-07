@@ -31,21 +31,14 @@ jobs:
       - name: AWS SSM Send-Command
         uses: peterkimzz/aws-ssm-send-command@v1.1.1
         with:
-          # AWS access key id
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          # AWS secret access key
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # Ensure correct region
-          aws-region: ${{ secrets.AWS_REGION }}  # Example: "us-east-1"
-          # Correct EC2 instance id (check if it is correct in secrets)
-          instance-ids: ${{ secrets.AWS_INSTANCE_ID }}
-          # Command execution location
+          aws-region: ${{ secrets.AWS_REGION }}
+          instance-ids: ${{ secrets.AWS_INSTANCE_ID }}  # Make sure this matches exactly
           working-directory: /home/ubuntu
-          # Bash commands you want to execute
           command: |
             sudo docker stop nestjsapp || true
             sudo docker rm nestjsapp || true
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
             sudo docker run -d --name nestjsapp -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
             sudo docker image prune -af
-          comment: Deploy new Docker image for the NestJS app on EC2 instance.
