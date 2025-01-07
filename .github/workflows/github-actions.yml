@@ -1,14 +1,13 @@
-name: AWS-EC2 Instance CD
+name: Deploy Docker Image to EC2
+run-name: ${{ github.actor }} is deploying Docker image to an existing EC2 instance 🚀
 
 on:
-  workflow_run:
-    workflows: ["Node.js CI"]  # Trigger when "Node.js CI" workflow completes
-    types: [completed]
-
+  push:
+    branches:
+      - main
 jobs:
-  on-success:
+  deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only runs on successful completion
     steps:
       - name: AWS SSM Send-Command
         uses: peterkimzz/aws-ssm-send-command@v1.1.1
