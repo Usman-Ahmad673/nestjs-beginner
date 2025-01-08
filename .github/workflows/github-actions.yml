@@ -35,18 +35,21 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > usman-aws.pem
           chmod 600 usman-aws.pem
 
+      - name: Create Target Directory on EC2
+        run: |
+          ssh -i usman-aws.pem -o StrictHostKeyChecking=no ubuntu@54.167.229.193 << 'EOF'
+            mkdir -p /home/ubuntu/docker-compose-dir
+          EOF
+
       - name: Transfer Docker Compose file
         run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          ssh-keyscan -H 54.167.229.193 >> ~/.ssh/known_hosts
-          scp -i usman-aws.pem -o StrictHostKeyChecking=no docker-compose.yml ubuntu@54.167.229.193:usr/local/bin/home/ubuntu/docker-compose.yml
+          scp -i usman-aws.pem -o StrictHostKeyChecking=no docker-compose.yml ubuntu@54.167.229.193:/home/ubuntu/docker-compose-dir/docker-compose.yml
 
       - name: Deploy using Docker Compose
         run: |
           ssh -i usman-aws.pem -o StrictHostKeyChecking=no ubuntu@54.167.229.193 << 'EOF'
             # Pull images and start services
-            cd /home/ubuntu
+            cd /home/ubuntu/docker-compose-dir
             export APP_IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}"
             docker-compose down || true
             docker-compose pull
