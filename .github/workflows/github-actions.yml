@@ -40,7 +40,7 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           ssh-keyscan -H 54.167.229.193 >> ~/.ssh/known_hosts
-          scp -i usman-aws.pem -o StrictHostKeyChecking=no docker-compose.yml ubuntu@54.167.229.193:docker-compose.yml
+          scp -i usman-aws.pem -o StrictHostKeyChecking=no docker-compose.yml ubuntu@54.167.229.193:usr/local/bin/home/ubuntu/docker-compose.yml
 
       - name: Deploy using Docker Compose
         run: |
