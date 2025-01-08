@@ -48,6 +48,8 @@ jobs:
           ssh -i usman-aws.pem -o StrictHostKeyChecking=no ubuntu@54.167.229.193 << 'EOF'
             # Pull images and start services
             cd /home/ubuntu
+            docker-compose down --remove-orphans || true
+            
             export APP_IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}"
             docker-compose down || true
             docker-compose pull
