@@ -46,11 +46,8 @@ jobs:
       - name: Deploy using Docker Compose
         run: |
           ssh -i usman-aws.pem -o StrictHostKeyChecking=no ubuntu@54.167.229.193 << 'EOF'
-          run: echo "ssh done"
-
             # Pull images and start services
             cd /home/ubuntu
-            run: echo "move to dir"
             export APP_IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}"
             docker-compose down || true
             docker-compose pull
