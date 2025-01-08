@@ -11,22 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Log latest commit hash
       - name: Log latest commit hash
         run: echo "The latest commit hash is ${{ github.sha }}"
 
-      # Step 3: Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # Step 4: Build and push Docker image to Docker Hub
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -34,19 +30,16 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
 
-      # Step 5: Set up SSH key
       - name: Set up SSH key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > usman-aws.pem
           chmod 600 usman-aws.pem
 
-      # Step 6: Debug SSH Key
       - name: Debug SSH Key
         run: |
           ls -l usman-aws.pem
           cat usman-aws.pem
 
-      # Step 6: Deploy to EC2
       - name: Deploy Docker to EC2
         run: |
           mkdir -p ~/.ssh
@@ -62,23 +55,17 @@ jobs:
                 sudo systemctl enable docker
             fi
 
-            # Login to Docker Hub
             sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
 
-            # Pull the latest Docker image
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
 
-            # Stop the existing container (if any)
             sudo docker stop nestjsapp || true
             sudo docker rm nestjsapp || true
 
-            # Run the new container
             sudo docker run -d --name nestjsapp -p 80:3000 -e DATABASE_URL="postgresql://neondb_owner:VaqjIH0ymKk2@ep-calm-bonus-a1iom3yl-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require" ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
 
-            # Clean up unused images
             sudo docker image prune -af
           EOF
 
-      # Step 7: Cleanup SSH key
       - name: Cleanup SSH key
         run: rm usman-aws.pem
