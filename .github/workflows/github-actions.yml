@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is deploying Docker image to EC2 🚀
 on:
   push:
     branches:
-      - main
+      - feature/home-route-ui
 
 jobs:
   deploy:
