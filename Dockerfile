@@ -13,7 +13,9 @@ COPY . .
 RUN npx prisma generate
 
 RUN pnpm run build
-
+# Set build-time argument for database URL
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 
 
 CMD [ "pnpm", "run", "start:prod" ]
