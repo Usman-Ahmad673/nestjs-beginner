@@ -19,4 +19,5 @@ ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
 
-CMD [ "pnpm", "run", "start:prod" ]
+# CMD [ "pnpm", "run", "start:prod" ]
+CMD [ "sh", "-c", "pnpm run start:prod" ]
