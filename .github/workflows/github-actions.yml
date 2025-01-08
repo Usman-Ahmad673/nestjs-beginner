@@ -44,8 +44,8 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          ssh-keyscan -H 54.145.38.38 >> ~/.ssh/known_hosts
-          ssh -i usman-aws.pem -o StrictHostKeyChecking=no ubuntu@54.145.38.38 << 'EOF'
+          ssh-keyscan -H 54.167.229.193 >> ~/.ssh/known_hosts
+          ssh -i usman-aws.pem -o StrictHostKeyChecking=no ubuntu@54.167.229.193 << 'EOF'
             # Install Docker if not installed
             if ! command -v docker &> /dev/null
             then
