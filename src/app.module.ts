@@ -7,9 +7,19 @@ import { EmployeeModule } from './employee/employee.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { LoggerModule } from './logger/logger.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
+    CacheModule.register({
+      max: 100,
+      ttl: 0,
+      isGlobal: true,
+      store: redisStore,
+      host: 'redis',
+      port: 6379,
+    }),
     UsersModule,
     DatabaseModule,
     EmployeeModule,

@@ -9,11 +9,13 @@ import {
   ParseIntPipe,
   Query,
   Ip,
+  UseInterceptors,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Prisma } from '@prisma/client';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { LoggerService } from 'src/logger/logger.service';
+import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 // import { CreateEmployeeDto } from './dto/create-employee.dto';
 // import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
@@ -30,6 +32,8 @@ export class EmployeeController {
 
   // @SkipThrottle({default: false})
   @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey('all-employees')
   findAll(
     @Ip() ip: string,
     @Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN',
