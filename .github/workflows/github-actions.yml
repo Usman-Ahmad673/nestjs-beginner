@@ -1,5 +1,5 @@
 name: Deploy Docker Image to EC2
-run-name: ${{ github.actor }} is deploying Docker image to EC2 🚀
+run-name: ${{ github.actor }} deploying Docker image to EC2 🚀
 
 on:
   push:
