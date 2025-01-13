@@ -9,6 +9,14 @@ pipeline {
         DATABASE_URL = 'postgresql://neondb_owner:VaqjIH0ymKk2@ep-calm-bonus-a1iom3yl-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require'
     }
     stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+                script {
+                    env.COMMIT_HASH = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                }
+            }
+        }
         stage('Deploy to EC2') {
             steps {
                 sshagent(['ec2-ssh-key']) {
