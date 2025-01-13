@@ -35,6 +35,24 @@ export class UsersService {
       email: 'Lucio_Hettinger@annie.ca',
       role: 'ADMIN',
     },
+    {
+      id: 6,
+      name: 'abraham lincoln',
+      email: 'Abraham@april.biz',
+      role: 'INTERN',
+    },
+    {
+      id: 7,
+      name: 'Amanda Cerny',
+      email: 'Amanda@melissa.tv',
+      role: 'INTERN',
+    },
+    {
+      id: 8,
+      name: 'Alex Benjamin',
+      email: 'Alex@yesenia.net',
+      role: 'ENGINEER',
+    },
   ];
 
   findAll(role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {

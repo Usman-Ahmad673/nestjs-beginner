@@ -1,5 +1,5 @@
-name: Deploy Docker Image to EC2
-run-name: ${{ github.actor }} deploying Docker image to EC2 🚀
+name: Build and Push Docker Image
+run-name: ${{ github.actor }} building and pushing Docker image 🚀
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,43 +29,3 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
-
-      - name: Set up SSH key
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > usman-aws.pem
-          chmod 600 usman-aws.pem
-
-      - name: Debug SSH Key
-        run: |
-          ls -l usman-aws.pem
-          cat usman-aws.pem
-
-      - name: Deploy Docker to EC2
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          ssh-keyscan -H 54.167.229.193 >> ~/.ssh/known_hosts
-          ssh -i usman-aws.pem -o StrictHostKeyChecking=no ubuntu@54.167.229.193 << 'EOF'
-            # Install Docker if not installed
-            if ! command -v docker &> /dev/null
-            then
-                sudo apt update
-                sudo apt install -y docker.io
-                sudo systemctl start docker
-                sudo systemctl enable docker
-            fi
-
-            sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
-
-            sudo docker stop nestjsapp || true
-            sudo docker rm nestjsapp || true
-
-            sudo docker run -d --name nestjsapp -p 80:3000 -e DATABASE_URL="postgresql://neondb_owner:VaqjIH0ymKk2@ep-calm-bonus-a1iom3yl-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require" ${{ secrets.DOCKERHUB_USERNAME }}/nestjsapp:${{ github.sha }}
-
-            sudo docker image prune -af
-          EOF
-
-      - name: Cleanup SSH key
-        run: rm usman-aws.pem
