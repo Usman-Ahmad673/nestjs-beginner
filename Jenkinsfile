@@ -1,10 +1,10 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_USERNAME = credentials('dockerhub-username') 
-        DOCKERHUB_PASSWORD = credentials('dockerhub-password') 
-        EC2_SSH_KEY = credentials('ec2-ssh-key') 
-        EC2_HOST = '54.167.229.193' 
+        DOCKERHUB_USERNAME = credentials('dockerhub-username')
+        DOCKERHUB_PASSWORD = credentials('dockerhub-password')
+        EC2_SSH_KEY = credentials('ec2-ssh-key')
+        EC2_HOST = '54.167.229.193'
         APP_NAME = 'nestjsapp'
         DATABASE_URL = 'postgresql://neondb_owner:VaqjIH0ymKk2@ep-calm-bonus-a1iom3yl-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require'
     }
@@ -21,8 +21,7 @@ pipeline {
             steps {
                 sshagent(['ec2-ssh-key']) {
                     sh """
-                    ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} << EOF
-                        # Install Docker if not installed
+                    ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} <<EOF
                         if ! command -v docker &> /dev/null
                         then
                             sudo apt update
@@ -31,22 +30,17 @@ pipeline {
                             sudo systemctl enable docker
                         fi
 
-                        # Docker login
-                        echo "${DOCKERHUB_PASSWORD}" | sudo docker login -u ${DOCKERHUB_USERNAME} --password-stdin
+                        echo "${DOCKERHUB_PASSWORD}" | sudo docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
 
-                        # Pull the latest image
                         sudo docker pull ${DOCKERHUB_USERNAME}/${APP_NAME}:${COMMIT_HASH}
 
-                        # Stop and remove the old container
                         sudo docker stop ${APP_NAME} || true
                         sudo docker rm ${APP_NAME} || true
 
-                        # Run the new container
                         sudo docker run -d --name ${APP_NAME} -p 80:3000 -e DATABASE_URL="${DATABASE_URL}" ${DOCKERHUB_USERNAME}/${APP_NAME}:${COMMIT_HASH}
 
-                        # Prune unused images
                         sudo docker image prune -af
-                    EOF
+EOF
                     """
                 }
             }
