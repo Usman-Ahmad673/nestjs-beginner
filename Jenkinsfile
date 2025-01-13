@@ -1,6 +1,7 @@
 pipeline {
     agent any
     environment {
+        DOCKERHUB_EMAIL = credentials('dockerhub-email')
         DOCKERHUB_USERNAME = credentials('dockerhub-username')
         DOCKERHUB_PASSWORD = credentials('dockerhub-password')
         EC2_SSH_KEY = credentials('ec2-ssh-key')
@@ -30,7 +31,7 @@ pipeline {
                             sudo systemctl enable docker
                         fi
 
-                        echo "${DOCKERHUB_PASSWORD}" | sudo docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+                        echo "${DOCKERHUB_PASSWORD}" | sudo docker login -u "${DOCKERHUB_EMAIL}" --password-stdin
 
                         sudo docker pull ${DOCKERHUB_USERNAME}/${APP_NAME}:${COMMIT_HASH}
 
