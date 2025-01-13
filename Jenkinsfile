@@ -1,11 +1,10 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_EMAIL = credentials('dockerhub-email')
-        DOCKERHUB_USERNAME = credentials('dockerhub-username')
-        DOCKERHUB_PASSWORD = credentials('dockerhub-password')
-        EC2_SSH_KEY = credentials('ec2-ssh-key')
-        EC2_HOST = '54.167.229.193'
+        DOCKERHUB_USERNAME = credentials('dockerhub-username') 
+        DOCKERHUB_PASSWORD = credentials('dockerhub-password') 
+        EC2_SSH_KEY = credentials('ec2-ssh-key') 
+        EC2_HOST = '54.167.229.193' 
         APP_NAME = 'nestjsapp'
         DATABASE_URL = 'postgresql://neondb_owner:VaqjIH0ymKk2@ep-calm-bonus-a1iom3yl-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require'
     }
@@ -31,7 +30,7 @@ pipeline {
                             sudo systemctl enable docker
                         fi
 
-                        echo "${DOCKERHUB_PASSWORD}" | sudo docker login -u "${DOCKERHUB_EMAIL}" --password-stdin
+                        echo "${DOCKERHUB_PASSWORD}" | sudo docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
 
                         sudo docker pull ${DOCKERHUB_USERNAME}/${APP_NAME}:${COMMIT_HASH}
 
@@ -49,7 +48,7 @@ EOF
     }
     post {
         always {
-            cleanWs()
+            cleanWs() 
         }
     }
 }
